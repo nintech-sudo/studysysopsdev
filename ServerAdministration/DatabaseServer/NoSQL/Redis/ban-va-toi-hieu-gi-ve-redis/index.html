@@ -1,0 +1,725 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Nơi lưu trữ học tập về System, Operations, Develop  của Nin">
+      
+      
+        <meta name="author" content="NinTech">
+      
+      
+        <link rel="canonical" href="https://studyspace.nin.id.vn/ServerAdministration/DatabaseServer/NoSQL/Redis/ban-va-toi-hieu-gi-ve-redis/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
+    
+    
+      
+        <title>Bạn và tôi hiểu gì về Redis? - Study Space SysOpsDev</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.35e1ed30.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-RYW9ZPVJLX"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-RYW9ZPVJLX",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-RYW9ZPVJLX",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+   <link href="../../../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="../../../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ban-va-toi-hieu-gi-ve-redis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../../.." title="Study Space SysOpsDev" class="md-header__button md-logo" aria-label="Study Space SysOpsDev" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Study Space SysOpsDev
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Bạn và tôi hiểu gì về Redis?
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_3" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_3">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256l137.3-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Study Space SysOpsDev" class="md-nav__button md-logo" aria-label="Study Space SysOpsDev" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Study Space SysOpsDev
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Server Administration
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Server Administration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1_1" id="__nav_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Database Server
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Database Server
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_1_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1_1_1" id="__nav_1_1_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    NoSQL
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_1_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            NoSQL
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_1_1_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  <span class="md-ellipsis">
+    Redis
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_1_1_1_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1_1_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            Redis
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#muc-luc" class="md-nav__link">
+    Mục lục
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-redis-la-gi" class="md-nav__link">
+    1. Redis là gì?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-redis-lam-uoc-nhung-gi" class="md-nav__link">
+    2. Redis làm được những gì?
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Redis làm được những gì?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-caching" class="md-nav__link">
+    2.1. Caching
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-chat-messaging-va-queue" class="md-nav__link">
+    2.2. Chat, messaging và queue
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-session" class="md-nav__link">
+    2.3. Session
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-counter" class="md-nav__link">
+    2.4. Counter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-real-time-analytics" class="md-nav__link">
+    2.5. Real-time analytics
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cac-kieu-du-lieu-ma-redis-co-the-ho-tro" class="md-nav__link">
+    3. Các kiểu dữ liệu mà Redis có thể hỗ trợ.
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-redis-hoat-ong-nhu-the-nao" class="md-nav__link">
+    4. Redis hoạt động như thế nào?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-redis-persistence-la-gi" class="md-nav__link">
+    5. Redis Persistence là gì?
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="ban-va-toi-hieu-gi-ve-redis"><strong>Bạn và Tôi hiểu gì về Redis?</strong><a class="headerlink" href="#ban-va-toi-hieu-gi-ve-redis" title="Permanent link">&para;</a></h1>
+<p><a class="glightbox" href="images/what_is_redis.webp" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="img" src="images/what_is_redis.webp" /></a>  </p>
+<h2 id="muc-luc"><strong>Mục lục</strong><a class="headerlink" href="#muc-luc" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[✔️] &gt; <a href="#">Redis là gì?</a>  </li>
+<li>[✔️] &gt; <a href="#">Redis làm được những gì?</a>  </li>
+<li>[✔️] &gt; <a href="#">Các kiểu dữ liệu mà Redis có thể hỗ trợ.</a></li>
+<li>[✔️] &gt; <a href="#">Redis hoạt động như thế nào?</a></li>
+<li>[✔️] &gt; <a href="#">Redis Persistence là gì?</a>  </li>
+<li>[✔️] &gt; <a href="#">Redis Replication là gì?</a>  </li>
+<li>[✔️] &gt; <a href="#">Redis Sentinel là gì?</a>  </li>
+<li>[✔️] &gt; <a href="#">Redis Cluster là gì?</a>  </li>
+<li>[✔️] &gt; <a href="#">Cách cài đặt và cấu hình một Redis server trên Server Linux.</a>  </li>
+<li>[✔️] &gt; <a href="#">Cấu hình Redis nâng cao.</a>  </li>
+</ul>
+<h2 id="1-redis-la-gi"><strong>1. Redis là gì?</strong><a class="headerlink" href="#1-redis-la-gi" title="Permanent link">&para;</a></h2>
+<p>Redis (Remote Dictionary Server) là một hệ thống cơ sở dữ liệu NoSQL, hay nói cách khác là một In-memory database hoạt động với phương thức key-value và được lưu trong bộ nhớ Ram thay vì lưu dữ liệu trong Disk. Thường được sử dụng rộng rãi trong các ứng dụng web và các hệ thống phân tán.  </p>
+<p>Tận dụng tốc độ xử lý cao của Ram, Redis cung cấp thời gian phản hồi trong vòng 10<sup>3</sup>s giây, cho phép hàng triệu yêu cầu mỗi giây bởi các ứng dụng yêu cầu thời gian thực như trò chơi, tài chính, y tế ,IoT ...  </p>
+<p>Hiện nay, Redis là một trong những công cụ mã nguồn mở phổ biến nhất. Nhờ hiệu suất mạnh mẽ và thời gian phản hồi nhanh chóng, Redis là sự lựa chọn phổ biến cho các lập trình viên trong việc caching, quản lý session, gaming, bảng xếp hạng, số liệu thống kê, phân tích thời gian thực, chat/messaging, media streaming, và các ứng dụng pub/sub ....  </p>
+<h2 id="2-redis-lam-uoc-nhung-gi"><strong>2. Redis làm được những gì?</strong><a class="headerlink" href="#2-redis-lam-uoc-nhung-gi" title="Permanent link">&para;</a></h2>
+<p>Nhắc đến Redis sẽ không ít người hiểu nhầm rằng Redis chỉ dùng để lưu cache. Tuy nhiên Redis có thể làm được nhiều hơn thế. Chúng ta hãy cùng xem đó là gì nhé!</p>
+<h3 id="21-caching"><strong>2.1. Caching</strong><a class="headerlink" href="#21-caching" title="Permanent link">&para;</a></h3>
+<p>Đặc điểm của Redis là dữ liệu được lưu trong Ram, do đó dữ liệu sẽ bị mất nếu service Redis bị lỗi, hay khi server bị restart. Nên có nhiều lập trình viên sử dụng Redis như bột bộ nhớ Cache, nhằm giảm độ trễ truy cập/xử lý dữ liệu, giảm tải cho server/service không phải xử lý đi xử lý lại các yêu cầu mất khá nhiều thời gian để tính toán.  </p>
+<p>Cũng có thể nói đây là tính năng phổ biến và chuộng nhiều người dùng nhất hiện nay.  </p>
+<h3 id="22-chat-messaging-va-queue"><strong>2.2. Chat, messaging và queue</strong><a class="headerlink" href="#22-chat-messaging-va-queue" title="Permanent link">&para;</a></h3>
+<p>Hỗ trợ các ứng dụng có tính năng Pub/Sub (Publish/Subscribe), các ứng dụng chatbot, trò chuyện trực tiếp, real-time comment streaming. Giúp làm giảm độ trễ tương tác giữa các người dùng.  </p>
+<p>Tạo hàng đợi để xử lý lần lượt các request. Redis cho phép lưu trữ theo list và cung cấp rất nhiều thao tác với các phần tử trong list, vì vậy nó còn được sử dụng như một message queue.  </p>
+<h3 id="23-session"><strong>2.3. Session</strong><a class="headerlink" href="#23-session" title="Permanent link">&para;</a></h3>
+<p>Giúp xử lý và lưu trữ hàng nghìn, hạng triệu Session của người dùng chẳng hạn như hồ sơ người dùng, thông tin xác thực đăng nhập, trạng thái phiên...  </p>
+<h3 id="24-counter"><strong>2.4. Counter</strong><a class="headerlink" href="#24-counter" title="Permanent link">&para;</a></h3>
+<p>Sử dụng làm bộ đếm. Với thuộc tính tăng giảm thông số rất nhanh trong khi dữ liệu được lưu trên RAM, sets và sorted sets được sử dụng thực hiện đếm lượt view của một website, các bảng xếp hạng trong game.</p>
+<h3 id="25-real-time-analytics"><strong>2.5. Real-time analytics</strong><a class="headerlink" href="#25-real-time-analytics" title="Permanent link">&para;</a></h3>
+<p>Redis là lựa chọn lý tưởng cho các trường hợp sử dụng phân tích thời gian thực như phân tích phương tiện truyền thông xã hội, mục tiêu quảng cáo, cá nhân hóa và IoT.  </p>
+<h2 id="3-cac-kieu-du-lieu-ma-redis-co-the-ho-tro"><strong>3. Các kiểu dữ liệu mà Redis có thể hỗ trợ.</strong><a class="headerlink" href="#3-cac-kieu-du-lieu-ma-redis-co-the-ho-tro" title="Permanent link">&para;</a></h2>
+<p>![[Redis-v2-separate-08.jpg|495]]</p>
+<h2 id="4-redis-hoat-ong-nhu-the-nao"><strong>4. Redis hoạt động như thế nào?</strong><a class="headerlink" href="#4-redis-hoat-ong-nhu-the-nao" title="Permanent link">&para;</a></h2>
+<p>Ở đây mình sẽ nói về cách hoạt động của Redis cache để mọi người có thể dễ dàng hình dung.  </p>
+<p>Trường hợp Redis đã lưu dữ liệu ( Hit Cache): <strong>Người dùng gửi yêu cầu &gt; Redis kiểm tra yêu cầu &gt; Yes &gt; trả dữ liệu cho người dùng</strong>. </p>
+<p>Trường hợp Redis chưa lưu dữ liệu ( Miss Cache): <strong>Người dùng gửi yêu cầu &gt; Redis kiểm tra yêu cầu &gt; No &gt; Request đến Database Mysql &gt; Trả dữ liệu cho người dùng &gt; Set Cache vào Redis</strong>.</p>
+<p>![[How-Redis-typically-works.png|450]]</p>
+<h2 id="5-redis-persistence-la-gi"><strong>5. Redis Persistence là gì?</strong><a class="headerlink" href="#5-redis-persistence-la-gi" title="Permanent link">&para;</a></h2>
+<p>Bạn hãy thử tượng tượng điều gì xảy ra nếu toàn bộ dữ liệu quan trọng (mất nhiều thời gian compute mới có được) bị mất sạch sau 1 lần gặp sự cố mà không thể khôi phục được. Với Redis thì điều này đã được lường trước, và <strong>Redis Persistence</strong> chính là phương pháp giúp chúng ta khắc phục vấn đề này.  </p>
+<p>Redis Persistence là khả năng lưu trữ dữ liệu trên Disk để đảm bảo tính bền vững (durability) của Redis. Redis cung cấp hai cơ chế Persistence: <strong>RDB (Redis Database)</strong> và <strong>AOF (Append-Only File)</strong>.  </p>
+<ul>
+<li>
+<p><strong>RDB</strong> là quá trình tạo ra một bản sao của dữ liệu Redis (<strong>snapshot</strong>) trong một thời điểm cụ thể được cấu hình và sẽ lưu data vào Disk. </p>
+</li>
+<li>
+<p><strong>AOF</strong> lưu lại tất cả các hoạt động Write vào Redis, tạo ra một file dạng log để phục hồi dữ liệu sau khi khởi động lại hệ thống. </p>
+</li>
+<li>
+<p><strong>RDB + AOF</strong>: Kết hợp cả 2 options trên. Nhưng khi Redis restart thì AOF sẽ được ưu tiên sử dụng để init data. </p>
+</li>
+</ul>
+<p>Bằng cách sử dụng Redis Persistence, bạn có thể khôi phục dữ liệu sau một sự cố và đảm bảo rằng dữ liệu không bị mất.</p>
+<p>![[Redis_snapshot.jpg|506]]</p>
+<p>## <strong>6. Redis Replication là gì?</strong>  </p>
+<p>Redis Replication là quá trình sao chép dữ liệu từ một Redis master (chủ) sang nhiều Redis slave (phụ). Khi có sự thay đổi dữ liệu trên Redis master, nó sẽ được chuyển tiếp đến tất cả các Redis slave để đảm bảo dữ liệu được đồng bộ trên toàn bộ hệ thống. Redis Replication cung cấp khả năng chịu lỗi (fault-tolerance) và tăng cường hiệu suất bằng việc cho phép đọc dữ liệu từ các Redis slave.  </p>
+<p>![[Redis_replication.png|349]]</p>
+<p>## <strong>7. Redis Sentinel là gì?</strong>  </p>
+<p>Redis Sentinel là một công cụ giám sát và quản lý hệ thống Redis. Nó giúp theo dõi sự hoạt động của các Redis master và slave, và tự động thực hiện quá trình failover (chuyển giao) khi một Redis master không hoạt động. Redis Sentinel giúp đảm bảo tính sẵn sàng và ổn định của hệ thống Redis bằng cách tự động chọn một Redis slave mới để thay thế Redis master gốc.  </p>
+<p>![[redis_sentinel.png|351]]</p>
+<p>## <strong>8. Redis Cluster là gì?</strong>  </p>
+<p>Redis Cluster là một cách để chia nhỏ dữ liệu và phân chia nó trên nhiều nút Redis để tạo thành một cụm (cluster). Cụm Redis Cluster được xây dựng để cung cấp khả năng mở rộng ngang (horizontal scalability) và tính sẵn sàng cao. Dữ liệu được phân phối trên các nút của cụm Redis Cluster và các nút này hoạt động độc lập nhưng vẫn hợp tác để đảm bảo tính nhất quán và hiệu suất cao. Redis Cluster cung cấp khả năng chịu lỗi và mở rộng tự động khi thêm hoặc xóa các nút trong cụm.</p>
+<p>![[redis_cluster.jpeg|397]]</p>
+<p>## <strong>9. Cách cài đặt và cấu hình một Redis server trên Server Linux.</strong> </p>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../../../..", "features": ["content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.instant", "navigation.instant.prefetch", "navigation.tracking", "navigation.sections", "navigation.footer", "navigation.expand", "navigation.path", "navigation.prune", "navigation.indexes", "search.highlight", "search.share", "search.suggest", "toc.follow", "navigation.top"], "search": "../../../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.aecac24b.min.js"></script>
+      
+        <script src="../../../../../js/open_in_new_tab.js"></script>
+      
+    
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
+</html>
